@@ -1,0 +1,60 @@
+{
+  "copyright": "Copyright 2016 Skytap Inc. Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at     http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "name": "minorjs-frames",
+  "version": "1.0.0",
+  "description": "stuff",
+  "author": {
+    "name": "Skytap",
+    "url": "http://www.skytap.com/"
+  },
+  "maintainers": [
+    {
+      "name": "Scott Brady",
+      "email": "scott@sbrady.com"
+    }
+  ],
+  "keywords": [
+    "minorjs",
+    "minor js",
+    "minor.js",
+    "web",
+    "views",
+    "frames"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/skytap/minorjs-frames"
+  },
+  "main": "./index.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "license": {
+    "type": "Apache v2",
+    "url": "https://github.com/skytap/minorjs-frames/blob/master/LICENSE"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/skytap/minorjs-frames/issues"
+  },
+  "homepage": "https://github.com/skytap/minorjs-frames",
+  "dependencies": {
+    "backbone": "~1.2.3",
+    "extend": "~3.0.0",
+    "inflection": "~1.8.0",
+    "minorjs-dom-dependency-manager": "~1.0.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-banner": "~0.6.0",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-coffee": "~0.13.0",
+    "grunt-mocha-test": "~0.12.7",
+    "mocha": "~2.3.3",
+    "should": "~7.1.0",
+    "sinon": "~1.17.2"
+  },
+  "scripts": {
+    "test": "grunt tests"
+  }
+}
