@@ -1,5 +1,9 @@
 # MinorJS Frames Changelog
 
+## Version 2.0.0, May 3rd, 2016
+
+* Remove sortFields hack
+
 ## Version 1.0.1, February 29th, 2016
 
 * Tell git to ignore node_modules

@@ -37,8 +37,6 @@ module.exports = class BaseFrame
     @immutableFilters     ||= options.immutableFilters  || {}
     @domDependencies      ||= options.domDependencies   || {}
     @queryString          ||= @request?.query           || {}
-    # TODO: deal with this better
-    @sortFields           ||= options.sortFields        || @payload.sortFields
 
     throw new Error('Undefined renderContextKlass') unless typeof @renderContextKlass is 'function'
 
@@ -129,8 +127,6 @@ module.exports = class BaseFrame
   getViewAttributes: () ->
     attrs = @renderContext.getViewAttributes()
 
-    # TODO: a little hacky.
-    attrs.fields = @sortFields if @sortFields
     # we're going to trust views to sort through this stuff in initialize()
     # and only take what they need
     attrs[if modelType      is 'frameModel'      then 'model'      else modelType]      = modelInstance      for modelType,      modelInstance      of @models
@@ -178,8 +174,6 @@ module.exports = class BaseFrame
     defaultFilters : @defaultFilters
     collections    : @collections
     models         : @models
-    # okay if it's undefined
-    sortFields     : @sortFields
 
   generateHtml: () ->
     @renderContext.render()
