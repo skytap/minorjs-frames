@@ -1,5 +1,10 @@
 # MinorJS Frames Changelog
 
+## Version 2.1.0, May 25, 2016
+
+* Add support for conditional views
+* Add support for non-standard view instantiation attrs
+
 ## Version 2.0.0, May 3rd, 2016
 
 * Remove sortFields hack
