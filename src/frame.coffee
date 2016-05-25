@@ -46,10 +46,9 @@ module.exports = class BaseFrame
   initialize: () ->
     # yields @models and/or @collections
     @setUpResources()
-    @generateFrameViewStructure()
     @instantiateViews()
     @setUpMessaging()
-    @domDependencyManager = new DomDependencyManager(@viewStructure, @viewInstances)
+    @domDependencyManager = new DomDependencyManager(@generateFrameViewStructure(), @viewInstances)
     @renderContext.initialize()
     @
 
@@ -135,31 +134,58 @@ module.exports = class BaseFrame
 
   instantiateViews: () ->
     # Instantiates a flat map lookup with view name as a key, and view instance as value
-    attrs = @getViewAttributes()
+    standardAttrs = @getViewAttributes()
     @viewInstances = {}
     for klass in @viewKlasses
-      @viewInstances[klass::name] = new klass(attrs)
-    @
+      @viewInstances[klass::name] = new klass(standardAttrs)
 
-  traverseViewStructure: (views) ->
-    # Recursively traverse our known DOM dependencies,
-    # recording each view we encounter, so that we
-    # don't redundantly store it in @viewStructure
-    # when we loop through @viewKlasses later
-    for name, value of views
-      @populatedViews.push(name) unless @populatedViews.indexOf(name) > -1
-      if views[name]
-        @traverseViewStructure(views[name])
+    # supplementalViewKlasses are for views we want to instantiate
+    # in an automated way, but which require additional, non-standard
+    # attributes AND/OR are only required if a certain condition is met.
+    # format for each entry in this array is:
+    ## klass     : MyConstructor
+    ## attrs     : () -> *optional
+    ##   hash of attributes in addition to, or to overwrite, standard attrs
+    ## condition : () -> *optional
+    ##   must return a boolean
+    @supplementalViewKlasses?.length && for viewSpec in @supplementalViewKlasses
+     unless viewSpec.condition && viewSpec.condition.call(@) isnt true
+        klass = viewSpec.klass
+        attrs = extend {}, standardAttrs, viewSpec.attrs?.call(@)
+        @viewInstances[attrs.name || klass::name] = new klass(attrs)
+    @
 
   generateFrameViewStructure: () ->
+    # deep-clone @domDependencies to avoid messing with the prototype
+    viewStructure = extend true, {}, @domDependencies
+
+    traverseViewStructure = (views) =>
+      # Recursively traverse our known DOM dependencies,
+      # recording each view we encounter, so that we
+      # don't redundantly store it in viewStructure
+      # when we loop through @viewKlasses later
+      for name, value of views
+        # @domDependencies allows a special syntax for views that are to be
+        # included conditionally. An optional/conditional view will be marked
+        # in @domDependencies with a trailing '?'
+        # Here, we delete that entry from the viewStructure hash and,
+        # if we find that the view has been instantiated, we replace it
+        # with a new entry that lacks the trailing '?'
+        if name.slice(-1) is '?'
+          delete views[name]
+          name = name.slice(0, -1)
+          views[name] = value if @viewInstances[name]
+        @populatedViews.push(name) unless @populatedViews.indexOf(name) > -1
+        if views[name]
+          traverseViewStructure(views[name])
+
     # Generates the structure of views by traversing the hierarchical nodes first,
     # then fills in the top level nodes from viewKlasses that have not yet been traversed.
-    @traverseViewStructure(@domDependencies)
-    @viewStructure = @domDependencies
-    for klass in @viewKlasses
-      if @populatedViews.indexOf(klass::name) is -1
-        @viewStructure[klass::name] ||= {}
-    @
+    traverseViewStructure viewStructure
+    for name, instance of @viewInstances
+      if @populatedViews.indexOf(name) is -1
+        viewStructure[name] ||= {}
+    viewStructure
 
   fetchCollections: () ->
     return unless @collections
